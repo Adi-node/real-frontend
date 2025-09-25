@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from '../assets/logo.png';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 
@@ -26,7 +27,7 @@ export default function Navbar() {
     return (
         <div className="flex justify-around items-center shadow-lg py-3 bg-white relative z-10 border-b border-gray-100">
             <div className="flex items-center">
-                <img src="/src/components/images/logo.png" alt="NAMASTE Logo" className="h-17" onError={(e) => {
+                <img src={logo} alt="NAMASTE Logo" className="h-17" onError={(e) => {
                     e.target.style.display = 'none';
                 }} />
                 <div>
