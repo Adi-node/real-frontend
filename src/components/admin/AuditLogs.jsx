@@ -1,6 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getAuditLogs, getAuditStats } from '../../services/authService';
+import { debounce } from 'lodash';
+
+const useDebounce = (callback, delay) => {
+  const debouncedFn = useCallback(
+    debounce((...args) => callback(...args), delay),
+    [delay] 
+  );
+  return debouncedFn;
+};
 
 const AuditLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -21,9 +30,16 @@ const AuditLogs = () => {
     search: '',
   });
 
+  const debouncedFetchAuditLogs = useDebounce(() => fetchAuditLogs(), 500);
+
   useEffect(() => {
     fetchAuditLogs();
-  }, [page, limit, filters]);
+  }, [page, limit]);
+
+  useEffect(() => {
+    debouncedFetchAuditLogs();
+    return () => debouncedFetchAuditLogs.cancel();
+  }, [filters, debouncedFetchAuditLogs]);
 
   useEffect(() => {
     fetchAuditStats();
@@ -76,7 +92,7 @@ const AuditLogs = () => {
       ...prev,
       [name]: value,
     }));
-    setPage(1); // Reset to first page on filter change
+    setPage(1); 
   };
 
   if (loadingLogs || loadingStats) return <div className="text-center py-4">Loading audit data...</div>;
